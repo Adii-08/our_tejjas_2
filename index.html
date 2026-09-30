@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManakSetu — BIS AI Assistant (SIH 26107)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 h-full flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- Tiranga Motif Bar -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-orange-500 via-white to-green-600 shadow-sm"></div>
+
+    <!-- Header (Centered Branding, Navigation & Language Switcher) -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 border-b border-slate-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col items-center justify-center text-center gap-4">
+            
+            <!-- Centered Logo and Titles -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 relative w-full">
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-extrabold px-3.5 py-2 rounded-2xl text-base tracking-wide shadow-inner border border-blue-400/30 flex items-center gap-2">
+                    🌉 ManakSetu
+                </div>
+                <div class="text-center sm:text-left">
+                    <div class="flex items-center justify-center sm:justify-start gap-2">
+                        <h1 id="hdr-title" class="text-base font-bold tracking-tight">Bureau of Indian Standards Assistant</h1>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-400/30 px-2 py-0.5 rounded-full font-mono font-semibold">
+                            SIH 26107
+                        </span>
+                    </div>
+                    <p id="hdr-subtitle" class="text-xs text-slate-400">Intelligent Assistant for Indian Standards & Compliance Services</p>
+                </div>
+
+                <!-- Global Language Switcher Button -->
+                <div class="sm:absolute sm:right-0 top-0 flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs">
+                    <button onclick="changeLanguage('en')" id="lang-en" class="px-3 py-1.5 rounded-lg font-bold transition bg-blue-600 text-white shadow">EN</button>
+                    <button onclick="changeLanguage('hi')" id="lang-hi" class="px-3 py-1.5 rounded-lg font-bold transition text-slate-300 hover:text-white">हिंदी</button>
+                </div>
+            </div>
+
+            <!-- Centered Navigation Tabs -->
+            <nav class="flex flex-wrap justify-center bg-slate-800/80 backdrop-blur p-1 rounded-2xl border border-slate-700/60 text-xs gap-1 shadow-inner">
+                <button onclick="switchTab('finder')" id="nav-finder" class="nav-btn px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 bg-blue-600 text-white shadow">
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i> <span data-i18n="tabFinder">Find Standards</span>
+                </button>
+                <button onclick="switchTab('verifier')" id="nav-verifier" class="nav-btn px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> <span data-i18n="tabVerifier">Verify Authenticity</span>
+                </button>
+                <button onclick="switchTab('roadmap')" id="nav-roadmap" class="nav-btn px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="calculator" class="w-3.5 h-3.5"></i> <span data-i18n="tabRoadmap">Fees & Roadmap</span>
+                </button>
+                <button onclick="switchTab('chat')" id="nav-chat" class="nav-btn px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i> <span data-i18n="tabChat">Chat with AI</span>
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full space-y-6">
+
+        <!-- ==================== TAB 1: SMART STANDARD FINDER ==================== -->
+        <section id="tab-content-finder" class="space-y-6">
+            <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[11px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider" data-i18n="finderBadge">👋 Hello Manufacturer & Maker!</span>
+                    <h2 class="text-2xl font-extrabold mt-3 tracking-tight" data-i18n="finderHero">What are you building or selling today?</h2>
+                </div>
+                <div class="flex gap-2 flex-wrap relative z-10" id="categoryFilterContainer">
+                    <button onclick="filterCategory('All')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-white text-blue-900 shadow transition" data-i18n="catAll">All Categories</button>
+                    <button onclick="filterCategory('Food & Water')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-blue-800/60 text-blue-200 border border-blue-700/60 hover:bg-blue-800 transition" data-i18n="catFood">Food & Water</button>
+                    <button onclick="filterCategory('Electrical')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-blue-800/60 text-blue-200 border border-blue-700/60 hover:bg-blue-800 transition" data-i18n="catElec">Electrical</button>
+                    <button onclick="filterCategory('Jewellery')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-blue-800/60 text-blue-200 border border-blue-700/60 hover:bg-blue-800 transition" data-i18n="catJewel">Jewellery</button>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative shadow-sm">
+                <i data-lucide="search" class="w-5 h-5 absolute left-4 top-4 text-slate-400"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Type your product name, material, or IS code (e.g. IS 10500)..." data-i18n-placeholder="searchPlaceholder" class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm transition">
+            </div>
+
+            <!-- Standards Grid -->
+            <div id="standardsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: VERIFICATION & TRUST HUB ==================== -->
+        <section id="tab-content-verifier" class="space-y-6 hidden max-w-4xl mx-auto">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-blue-50 text-blue-700 rounded-2xl"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900" data-i18n="verifierTitle">Is your purchase 100% genuine?</h2>
+                        <p class="text-xs text-slate-500" data-i18n="verifierSubtitle">Scan or type a 6-digit jewellery HUID or ISI license number to verify it against official records instantly.</p>
+                    </div>
+                </div>
+
+                <!-- Mode Selector -->
+                <div class="flex gap-6 border-b border-slate-100 pb-4">
+                    <label class="flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer">
+                        <input type="radio" name="vtype" value="HUID" checked onchange="setVerifyType('HUID')" class="text-blue-600 focus:ring-blue-500 w-4 h-4"> <span data-i18n="radioHuid">Gold Jewellery (6-Digit HUID)</span>
+                    </label>
+                    <label class="flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer">
+                        <input type="radio" name="vtype" value="ISI" onchange="setVerifyType('ISI')" class="text-blue-600 focus:ring-blue-500 w-4 h-4"> <span data-i18n="radioIsi">ISI License Number (CM/L)</span>
+                    </label>
+                </div>
+
+                <!-- Input & Scanner Simulation -->
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2 space-y-3">
+                        <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider" data-i18n="enterCodeLabel">Enter Code</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="verifyInput" placeholder="e.g. AH9821 or CM/L-8400012" data-i18n-placeholder="verifyPlaceholder" class="flex-1 px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-mono uppercase focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <button onclick="runVerification()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl text-xs font-bold transition shadow" data-i18n="btnCheck">Check Now</button>
+                        </div>
+                        <p class="text-[11px] text-slate-400" data-i18n="verifyTip">💡 Want to test a fake alert? Type <code class="bg-slate-100 px-1.5 py-0.5 rounded text-rose-600 font-mono font-semibold">FAKE01</code>.</p>
+                    </div>
+
+                    <!-- Simulated Camera Scanner Box -->
+                    <div class="bg-slate-900 text-white p-5 rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-blue-600/10 animate-pulse"></div>
+                        <i data-lucide="scan" class="w-8 h-8 text-blue-400 mb-2 relative z-10"></i>
+                        <span class="text-xs font-bold relative z-10" data-i18n="scanTitle">Got a QR or Hallmark tag?</span>
+                        <button onclick="simulateScan()" class="mt-3 text-[11px] bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl font-semibold relative z-10 transition shadow" data-i18n="btnScan">Simulate Scan 📷</button>
+                    </div>
+                </div>
+
+                <!-- Result Card Container -->
+                <div id="verifyResultCard" class="hidden mt-6 p-6 rounded-2xl border transition-all animate-fadeIn"></div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: ROADMAP & FEE CALCULATOR ==================== -->
+        <section id="tab-content-roadmap" class="space-y-6 hidden max-w-4xl mx-auto">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-blue-50 text-blue-700 rounded-2xl"><i data-lucide="calculator" class="w-6 h-6"></i></div>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900" data-i18n="calcTitle">Let's plan your BIS License & Estimate Costs</h2>
+                        <p class="text-xs text-slate-500" data-i18n="calcSubtitle">We automatically apply statutory MSME and women entrepreneur concessions so you get accurate figures.</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider" data-i18n="selectStandardLabel">Select Product Standard</label>
+                        <select id="calcStandard" onchange="updateFeeCalculation()" class="w-full mt-2 px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <option value="0" data-i18n="optStd0">IS 10500:2012 — Drinking Water (Lab Fee: ₹45,000)</option>
+                            <option value="1" data-i18n="optStd1">IS 1293:2019 — Plugs & Sockets (Lab Fee: ₹62,000)</option>
+                            <option value="2" data-i18n="optStd2">IS 14150:1999 — Gold Hallmarking (Lab Fee: ₹12,000)</option>
+                            <option value="3" data-i18n="optStd3">IS 9873:2019 — Toy Safety (Lab Fee: ₹55,000)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider" data-i18n="selectScaleLabel">Your Business Scale</label>
+                        <select id="calcScale" onchange="updateFeeCalculation()" class="w-full mt-2 px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <option value="micro" data-i18n="optMicro">Micro Unit / Women Entrepreneur (50% Concession)</option>
+                            <option value="small" data-i18n="optSmall">Small Enterprise (20% Concession)</option>
+                            <option value="large" data-i18n="optLarge">Medium & Large Industry (Standard Rates)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Fee Breakdown Table -->
+                <div class="border border-slate-200 rounded-2xl overflow-hidden text-xs shadow-sm">
+                    <div class="bg-slate-50 p-4 font-bold text-slate-700 border-b border-slate-200 flex justify-between">
+                        <span data-i18n="tableComp">Fee Component / Stage</span>
+                        <span data-i18n="tableAmt">Estimated Amount (INR)</span>
+                    </div>
+                    <div class="divide-y divide-slate-100 bg-white">
+                        <div class="p-4 flex justify-between"><span data-i18n="feeAppText">Application Form Fee</span><span id="feeApp" class="font-mono font-semibold">₹500</span></div>
+                        <div class="p-4 flex justify-between"><span data-i18n="feeAuditText">Factory Audit & Inspection Assessment</span><span id="feeAudit" class="font-mono font-semibold">₹3,500</span></div>
+                        <div class="p-4 flex justify-between"><span data-i18n="feeLabText">BIS NABL Lab Sample Testing</span><span id="feeLab" class="font-mono font-semibold">₹45,000</span></div>
+                        <div class="p-4 flex justify-between"><span data-i18n="feeAnnualText">Annual Advance Minimum Marking Fee</span><span id="feeAnnual" class="font-mono font-semibold">₹5,000</span></div>
+                        <div class="p-4 bg-blue-600 text-white font-bold flex justify-between text-sm shadow-inner rounded-b-xl">
+                            <span data-i18n="feeTotalText">Total Estimated Outlay (excl. GST)</span>
+                            <span id="feeTotal" class="font-mono">₹54,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roadmap Steps Preview -->
+                <div class="border-t pt-6">
+                    <h3 class="text-sm font-bold text-slate-800 mb-4" data-i18n="roadmapTitle">Your 5-Step Journey to Getting Certified</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-center">
+                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-full inline-flex items-center justify-center font-bold text-xs mb-2 shadow">1</span>
+                            <h4 class="font-bold text-slate-800 text-xs" data-i18n="step1Title">Apply Online</h4>
+                            <p class="text-[10px] text-slate-500 mt-1" data-i18n="step1Desc">Submit Form-V on Manakonline</p>
+                        </div>
+                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-full inline-flex items-center justify-center font-bold text-xs mb-2 shadow">2</span>
+                            <h4 class="font-bold text-slate-800 text-xs" data-i18n="step2Title">In-house QC</h4>
+                            <p class="text-[10px] text-slate-500 mt-1" data-i18n="step2Desc">Setup testing kit per SIT</p>
+                        </div>
+                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-full inline-flex items-center justify-center font-bold text-xs mb-2 shadow">3</span>
+                            <h4 class="font-bold text-slate-800 text-xs" data-i18n="step3Title">Lab Testing</h4>
+                            <p class="text-[10px] text-slate-500 mt-1" data-i18n="step3Desc">Test samples in BIS lab</p>
+                        </div>
+                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-full inline-flex items-center justify-center font-bold text-xs mb-2 shadow">4</span>
+                            <h4 class="font-bold text-slate-800 text-xs" data-i18n="step4Title">Factory Audit</h4>
+                            <p class="text-[10px] text-slate-500 mt-1" data-i18n="step4Desc">Officer on-site inspection</p>
+                        </div>
+                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                            <span class="w-7 h-7 bg-emerald-600 text-white rounded-full inline-flex items-center justify-center font-bold text-xs mb-2 shadow">5</span>
+                            <h4 class="font-bold text-slate-800 text-xs" data-i18n="step5Title">Get License!</h4>
+                            <p class="text-[10px] text-slate-500 mt-1" data-i18n="step5Desc">Receive CM/L & ISI mark</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: AI ASSISTANT ==================== -->
+        <section id="tab-content-chat" class="space-y-6 hidden max-w-3xl mx-auto">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col h-[600px]">
+                <div class="p-5 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow">🤖</div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900" data-i18n="chatHeaderTitle">Chat with BIS AI Assistant</h3>
+                            <p class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1" data-i18n="chatSub">● Bilingual Voice Ready (English & Hindi)</p>
+                        </div>
+                    </div>
+                    <button onclick="resetChat()" class="text-xs text-slate-400 hover:text-slate-600 font-medium" data-i18n="btnClearChat">Clear Chat</button>
+                </div>
+
+                <!-- Chat Messages Body -->
+                <div id="chatMessages" class="flex-1 p-5 overflow-y-auto space-y-4">
+                    <div class="flex justify-start">
+                        <div class="max-w-[85%] rounded-2xl p-4 text-xs bg-slate-100 text-slate-800 border border-slate-200 leading-relaxed shadow-sm">
+                            <span id="initialGreeting">Namaste! 🙏 I'm your intelligent compliance assistant for Indian Standards and BIS services. Ask me anything about QCO orders, IS codes, or how to get your product certified!</span><br>
+                            <div class="mt-3 flex gap-2">
+                                <button onclick="speakResponse('Namaste! I am your intelligent compliance assistant for Indian Standards and BIS services.', 'en-IN')" class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-blue-100 transition">🔊 Listen (EN)</button>
+                                <button onclick="speakResponse('नमस्ते! मैं भारतीय मानकों और बीआईएस सेवाओं के लिए आपका बुद्धिमान अनुपालन सहायक हूँ।', 'hi-IN')" class="text-[10px] bg-orange-50 text-orange-800 border border-orange-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-orange-100 transition">🔊 सुनें (HI)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Prompt Chips -->
+                <div class="px-5 py-2.5 flex gap-2 overflow-x-auto border-t border-slate-100 bg-slate-50/50">
+                    <button onclick="sendQuickPrompt(currentLang === 'en' ? 'Do packaged water bottles need QCO?' : 'क्या पैकेज्ड पानी की बोतलों को QCO चाहिए?')" class="text-[11px] bg-white border border-slate-200 px-3.5 py-1.5 rounded-full text-slate-600 whitespace-nowrap hover:bg-slate-100 font-medium shadow-sm" data-i18n="chip1">💧 Water bottle rules?</button>
+                    <button onclick="sendQuickPrompt(currentLang === 'en' ? 'How does gold HUID hallmarking work?' : 'सोने की HUID हॉलमार्किंग कैसे काम करती है?')" class="text-[11px] bg-white border border-slate-200 px-3.5 py-1.5 rounded-full text-slate-600 whitespace-nowrap hover:bg-slate-100 font-medium shadow-sm" data-i18n="chip2">💍 Gold HUID guide?</button>
+                    <button onclick="sendQuickPrompt(currentLang === 'en' ? 'What discounts do MSMEs get on fees?' : 'एमएसएमई को शुल्क पर क्या छूट मिलती है?')" class="text-[11px] bg-white border border-slate-200 px-3.5 py-1.5 rounded-full text-slate-600 whitespace-nowrap hover:bg-slate-100 font-medium shadow-sm" data-i18n="chip3">🏷️ MSME Concessions?</button>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form onsubmit="handleChatSubmit(event)" class="p-4 border-t border-slate-100 flex gap-2 bg-white rounded-b-3xl">
+                    <input type="text" id="chatInput" placeholder="Ask me anything in English or Hindi..." data-i18n-placeholder="chatPlaceholder" class="flex-1 px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow transition">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i> <span data-i18n="btnAsk">Ask</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Drawer for Standard Details -->
+    <div id="standardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl relative border border-slate-100 animate-fadeIn">
+            <button onclick="closeModal()" class="absolute right-5 top-5 text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 text-slate-400 py-6 text-center text-xs mt-auto">
+        <span data-i18n="footerText">Bureau of Indian Standards (BIS) Smart Assistant</span>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        lucide.createIcons();
+
+        let currentLang = 'en';
+
+        const translations = {
+            en: {
+                hdrTitle: "Bureau of Indian Standards Assistant",
+                hdrSub: "Intelligent Assistant for Indian Standards & Compliance Services",
+                tabFinder: "Find Standards",
+                tabVerifier: "Verify Authenticity",
+                tabRoadmap: "Fees & Roadmap",
+                tabChat: "Chat with AI",
+                finderBadge: "👋 Hello Manufacturer & Maker!",
+                finderHero: "What are you building or selling today?",
+                catAll: "All Categories",
+                catFood: "Food & Water",
+                catElec: "Electrical",
+                catJewel: "Jewellery",
+                searchPlaceholder: "Type your product name, material, or IS code (e.g. IS 10500)...",
+                verifierTitle: "Is your purchase 100% genuine?",
+                verifierSubtitle: "Scan or type a 6-digit jewellery HUID or ISI license number to verify it against official records instantly.",
+                radioHuid: "Gold Jewellery (6-Digit HUID)",
+                radioIsi: "ISI License Number (CM/L)",
+                enterCodeLabel: "Enter Code",
+                verifyPlaceholder: "e.g. AH9821 or CM/L-8400012",
+                btnCheck: "Check Now",
+                verifyTip: "💡 Want to test a fake alert? Type <code class=\"bg-slate-100 px-1.5 py-0.5 rounded text-rose-600 font-mono font-semibold\">FAKE01</code>.",
+                scanTitle: "Got a QR or Hallmark tag?",
+                btnScan: "Simulate Scan 📷",
+                calcTitle: "Let's plan your BIS License & Estimate Costs",
+                calcSubtitle: "We automatically apply statutory MSME and women entrepreneur concessions so you get accurate figures.",
+                selectStandardLabel: "Select Product Standard",
+                selectScaleLabel: "Your Business Scale",
+                optStd0: "IS 10500:2012 — Drinking Water (Lab Fee: ₹45,000)",
+                optStd1: "IS 1293:2019 — Plugs & Sockets (Lab Fee: ₹62,000)",
+                optStd2: "IS 14150:1999 — Gold Hallmarking (Lab Fee: ₹12,000)",
+                optStd3: "IS 9873:2019 — Toy Safety (Lab Fee: ₹55,000)",
+                optMicro: "Micro Unit / Women Entrepreneur (50% Concession)",
+                optSmall: "Small Enterprise (20% Concession)",
+                optLarge: "Medium & Large Industry (Standard Rates)",
+                tableComp: "Fee Component / Stage",
+                tableAmt: "Estimated Amount (INR)",
+                feeAppText: "Application Form Fee",
+                feeAuditText: "Factory Audit & Inspection Assessment",
+                feeLabText: "BIS NABL Lab Sample Testing",
+                feeAnnualText: "Annual Advance Minimum Marking Fee",
+                feeTotalText: "Total Estimated Outlay (excl. GST)",
+                roadmapTitle: "Your 5-Step Journey to Getting Certified",
+                step1Title: "Apply Online",
+                step1Desc: "Submit Form-V on Manakonline",
+                step2Title: "In-house QC",
+                step2Desc: "Setup testing kit per SIT",
+                step3Title: "Lab Testing",
+                step3Desc: "Test samples in BIS lab",
+                step4Title: "Factory Audit",
+                step4Desc: "Officer on-site inspection",
+                step5Title: "Get License!",
+                step5Desc: "Receive CM/L & ISI mark",
+                chatHeaderTitle: "Chat with BIS AI Assistant",
+                chatSub: "● Bilingual Voice Ready (English & Hindi)",
+                btnClearChat: "Clear Chat",
+                initialGreeting: "Namaste! 🙏 I'm your intelligent compliance assistant for Indian Standards and BIS services. Ask me anything about QCO orders, IS codes, or how to get your product certified!",
+                chip1: "💧 Water bottle rules?",
+                chip2: "💍 Gold HUID guide?",
+                chip3: "🏷️ MSME Concessions?",
+                chatPlaceholder: "Ask me anything in English or Hindi...",
+                btnAsk: "Ask",
+                footerText: "Bureau of Indian Standards (BIS) Smart Assistant",
+                schemeLabel: "Scheme:",
+                viewSpecs: "View Specs →",
+                estTurnaround: "Est. Lab Turnaround:",
+                daysText: "Days",
+                estimateFeesBtn: "Estimate Fees 🚀"
+            },
+            hi: {
+                hdrTitle: "भारतीय मानक ब्यूरो सहायक",
+                hdrSub: "भारतीय मानकों और अनुपालन सेवाओं के लिए बुद्धिमान सहायक",
+                tabFinder: "मानक खोजें",
+                tabVerifier: "सत्यापन करें",
+                tabRoadmap: "शुल्क और रोडमैप",
+                tabChat: "एआई चैट",
+                finderBadge: "👋 नमस्ते निर्माता और रचनाकार!",
+                finderHero: "आज आप क्या बना या बेच रहे हैं?",
+                catAll: "सभी श्रेणियां",
+                catFood: "खाद्य और जल",
+                catElec: "विद्युत",
+                catJewel: "आभूषण",
+                searchPlaceholder: "अपने उत्पाद का नाम, सामग्री या IS कोड टाइप करें (उदा. IS 10500)...",
+                verifierTitle: "क्या आपकी खरीद 100% असली है?",
+                verifierSubtitle: "आधिकारिक रिकॉर्ड के खिलाफ तुरंत सत्यापित करने के लिए 6-अंकों का आभूषण HUID या ISI लाइसेंस नंबर स्कैन या टाइप करें।",
+                radioHuid: "स्वर्ण आभूषण (6-अंक HUID)",
+                radioIsi: "ISI लाइसेंस नंबर (CM/L)",
+                enterCodeLabel: "कोड दर्ज करें",
+                verifyPlaceholder: "उदा. AH9821 या CM/L-8400012",
+                btnCheck: "अभी जांचें",
+                verifyTip: "💡 नकली चेतावनी टेस्ट करना चाहते हैं? टाइप करें <code class=\"bg-slate-100 px-1.5 py-0.5 rounded text-rose-600 font-mono font-semibold\">FAKE01</code>。",
+                scanTitle: "QR या हॉलमार्क टैग है?",
+                btnScan: "स्कैन सिम्युलेट करें 📷",
+                calcTitle: "अपने BIS लाइसेंस की योजना बनाएं और लागत का अनुमान लगाएं",
+                calcSubtitle: "हम स्वचालित रूप से वैधानिक MSME और महिला उद्यमी रियायतें लागू करते हैं ताकि आपको सटीक आंकड़े मिल सकें।",
+                selectStandardLabel: "उत्पाद मानक चुनें",
+                selectScaleLabel: "आपका व्यावसायिक पैमाना",
+                optStd0: "IS 10500:2012 — पेयजल (लैब शुल्क: ₹45,000)",
+                optStd1: "IS 1293:2019 — प्लग और सॉकेट (लैब शुल्क: ₹62,000)",
+                optStd2: "IS 14150:1999 — स्वर्ण हॉलमार्किंग (लैब शुल्क: ₹12,000)",
+                optStd3: "IS 9873:2019 — खिलौना सुरक्षा (लैब शुल्क: ₹55,000)",
+                optMicro: "सूक्ष्म इकाई / महिला उद्यमी (50% रियायत)",
+                optSmall: "छोटा उद्यम (20% रियायत)",
+                optLarge: "मध्यम और बड़ा उद्योग (मानक दरें)",
+                tableComp: "शुल्क घटक / चरण",
+                tableAmt: "अनुमानित राशि (INR)",
+                feeAppText: "आवेदन पत्र शुल्क",
+                feeAuditText: "फैक्ट्री ऑडिट और निरीक्षण मूल्यांकन",
+                feeLabText: "BIS NABL लैब नमूना परीक्षण",
+                feeAnnualText: "वार्षिक अग्रिम न्यूनतम अंकन शुल्क",
+                feeTotalText: "कुल अनुमानित परिव्यय (GST छोड़कर)",
+                roadmapTitle: "प्रमाणित होने की आपकी 5-चरणीय यात्रा",
+                step1Title: "ऑनलाइन आवेदन",
+                step1Desc: "मानकऑनलाइन पर फॉर्म-V जमा करें",
+                step2Title: "इन-हाउस QC",
+                step2Desc: "SIT के अनुसार परीक्षण किट स्थापित करें",
+                step3Title: "लैब परीक्षण",
+                step3Desc: "BIS लैब में नमूनों का परीक्षण",
+                step4Title: "फैक्ट्री ऑडिट",
+                step4Desc: "अधिकारी द्वारा ऑन-साइट निरीक्षण",
+                step5Title: "लाइसेंस प्राप्त करें!",
+                step5Desc: "CM/L और ISI मार्क प्राप्त करें",
+                chatHeaderTitle: "BIS AI सहायक के साथ चैट करें",
+                chatSub: "● द्विभाषी आवाज़ तैयार (अंग्रेजी और हिंदी)",
+                btnClearChat: "चैट साफ़ करें",
+                initialGreeting: "नमस्ते! 🙏 मैं भारतीय मानकों और बीआईएस सेवाओं के लिए आपका बुद्धिमान अनुपालन सहायक हूँ। QCO आदेशों, IS codes, या अपने उत्पाद को प्रमाणित कराने के बारे में कुछ भी पूछें!",
+                chip1: "💧 पानी की बोतल के नियम?",
+                chip2: "💍 गोल्ड HUID गाइड?",
+                chip3: "🏷️ MSME रियायतें?",
+                chatPlaceholder: "अंग्रेजी या हिंदी में कुछ भी पूछें...",
+                btnAsk: "पूछें",
+                footerText: "भारतीय मानक ब्यूरो (BIS) स्मार्ट सहायक",
+                schemeLabel: "योजना:",
+                viewSpecs: "विशेष विवरण देखें →",
+                estTurnaround: "अनुमानित लैब समय:",
+                daysText: "दिन",
+                estimateFeesBtn: "शुल्क का अनुमान लगाएं 🚀"
+            }
+        };
+
+        const standardsData = [
+            { 
+                code: "IS 10500:2012", 
+                title: { en: "Drinking Water — Specification", hi: "पेयजल — विशिष्टता" }, 
+                category: "Food & Water", 
+                qco: { en: "Mandatory (QCO Active)", hi: "अनिवार्य (QCO सक्रिय)" }, 
+                scheme: "Scheme-I (ISI Mark)", 
+                scope: { 
+                    en: "Specifies physical, chemical, and microbiological requirements for packaged and pipeline potable drinking water.", 
+                    hi: "पैकेज्ड और पाइपलाइन पीने योग्य पानी के लिए भौतिक, रासायनिक और सूक्ष्मजीवविज्ञानी आवश्यकताओं को निर्दिष्ट करता है।" 
+                }, 
+                tests: { 
+                    en: ["Turbidity & pH", "Total Dissolved Solids (TDS)", "Heavy Metals (Lead, Arsenic)", "Bacteriological Test"], 
+                    hi: ["गंदलापन और पीएच", "कुल घुलित ठोस (TDS)", "भारी धातुएं (सीसा, आर्सेनिक)", "बैक्टीरियोलॉजिकल टेस्ट"] 
+                }, 
+                labFee: 45000, 
+                days: 14 
+            },
+            { 
+                code: "IS 1293:2019", 
+                title: { en: "Plugs and Socket-Outlets up to 250V / 16A", hi: "प्लग और सॉकेट-आउटलेट 250V / 16A तक" }, 
+                category: "Electrical", 
+                qco: { en: "Mandatory (QCO Active)", hi: "अनिवार्य (QCO सक्रिय)" }, 
+                scheme: "Scheme-I (ISI Mark)", 
+                scope: { 
+                    en: "Safety requirements, dimensional specifications, insulation resistance, temperature rise limits, and mechanical endurance for switches and sockets.", 
+                    hi: "स्विच और सॉकेट के लिए सुरक्षा आवश्यकताएं, आयामी विनिर्देश, इन्सुलेशन प्रतिरोध, तापमान वृद्धि सीमा और यांत्रिक सहनशक्ति।" 
+                }, 
+                tests: { 
+                    en: ["High Voltage Flash Test", "Temperature Rise", "Drop & Impact Resistance", "Glow-wire Flammability"], 
+                    hi: ["हाई वोल्टेज फ्लैश टेस्ट", "तापमान वृद्धि", "ड्रॉप और प्रभाव प्रतिरोध", "ग्लो-वायर ज्वलनशीलता"] 
+                }, 
+                labFee: 62000, 
+                days: 21 
+            },
+            { 
+                code: "IS 14150:1999", 
+                title: { en: "Gold and Gold Alloys Hallmarking", hi: "स्वर्ण और स्वर्ण मिश्र धातु हॉलमार्किंग" }, 
+                category: "Jewellery", 
+                qco: { en: "Mandatory across 343+ districts", hi: "343+ जिलों में अनिवार्य" }, 
+                scheme: "Hallmarking Scheme (HUID)", 
+                scope: { 
+                    en: "Covers fineness, assaying methods (Fire Assay / XRF), and laser inscribing of 6-digit alphanumeric Hallmark Unique Identification (HUID).", 
+                    hi: "शुद्धता, परख विधियों (फायर एसे / XRF) और 6-अंकों के अल्फ़ान्यूमेरिक हॉलमार्क यूनिक आइडेंटिफिकेशन (HUID) के लेजर उत्कीर्णन को शामिल करता है।" 
+                }, 
+                tests: { 
+                    en: ["Fire Assay Method (IS 1418)", "XRF Purity Screening", "Laser Inscription Clarity"], 
+                    hi: ["फायर एसे विधि (IS 1418)", "XRF शुद्धता स्क्रीनिंग", "लेजर उत्कीर्णन स्पष्टता"] 
+                }, 
+                labFee: 12000, 
+                days: 3 
+            },
+            { 
+                code: "IS 9873 (Part 1):2019", 
+                title: { en: "Safety of Toys — Mechanical & Physical Properties", hi: "खिलौनों की सुरक्षा — यांत्रिक और भौतिक गुण" }, 
+                category: "Consumer Goods", 
+                qco: { en: "Mandatory (Toys Safety QCO)", hi: "अनिवार्य (खिलौना सुरक्षा QCO)" }, 
+                scheme: "Scheme-I (ISI Mark)", 
+                scope: { 
+                    en: "Safety criteria for children's toys, preventing sharp edges, small detachment choking hazards, tensile breakage, and toxic migration.", 
+                    hi: "बच्चों के खिलौनों के लिए सुरक्षा मानदंड, नुकीले किनारों को रोकना, छोटे हिस्सों के घुटने का खतरा, तन्य टूटना और जहरीला प्रवास।" 
+                }, 
+                tests: { 
+                    en: ["Small Parts Choking Cylinder", "Torque and Tension Test", "Drop Impact Resistance", "Flammability Assessment"], 
+                    hi: ["छोटे हिस्से चोकिंग सिलेंडर", "टॉर्क और टेंशन टेस्ट", "ड्रॉप इम्पैक्ट रेजिस्टेंस", "ज्वलनशीलता मूल्यांकन"] 
+                }, 
+                labFee: 55000, 
+                days: 18 
+            },
+            { 
+                code: "IS 1786:2008", 
+                title: { en: "High Strength Deformed Steel Bars for Concrete (TMT)", hi: "कंक्रीट के लिए उच्च शक्ति विकृत स्टील बार (TMT)" }, 
+                category: "Civil & Steel", 
+                qco: { en: "Mandatory (Steel QCO)", hi: "अनिवार्य (स्टील QCO)" }, 
+                scheme: "Scheme-I (ISI Mark)", 
+                scope: { 
+                    en: "Requirements for thermo-mechanically treated (TMT) steel bars Fe 415, Fe 500, Fe 550, and Fe 600 grades for RCC building works.", 
+                    hi: "RCC निर्माण कार्यों के लिए थर्मो-मैकेनिकली उपचारित (TMT) स्टील बार Fe 415, Fe 500, Fe 550 और Fe 600 ग्रेड की आवश्यकताएं।" 
+                }, 
+                tests: { 
+                    en: ["Tensile & 0.2% Proof Stress", "Bend & Re-bend Test", "Carbon Equivalent Analysis", "Rib Geometry & Bond"], 
+                    hi: ["तन्य और 0.2% प्रूफ तनाव", "बेंड और री-बेंड टेस्ट", "कार्बन समतुल्य विश्लेषण", "पसलियों की ज्यामिति और बांड"] 
+                }, 
+                labFee: 78000, 
+                days: 10 
+            }
+        ];
+
+        let currentCategory = 'All';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            if(lang === 'en') {
+                document.getElementById('lang-en').className = "px-3 py-1.5 rounded-lg font-bold transition bg-blue-600 text-white shadow";
+                document.getElementById('lang-hi').className = "px-3 py-1.5 rounded-lg font-bold transition text-slate-300 hover:text-white";
+            } else {
+                document.getElementById('lang-hi').className = "px-3 py-1.5 rounded-lg font-bold transition bg-blue-600 text-white shadow";
+                document.getElementById('lang-en').className = "px-3 py-1.5 rounded-lg font-bold transition text-slate-300 hover:text-white";
+            }
+
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(t[key]) el.innerHTML = t[key];
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if(t[key]) el.setAttribute('placeholder', t[key]);
+            });
+
+            renderStandards(document.getElementById('searchInput').value);
+            updateFeeCalculation();
+            
+            const greetingEl = document.getElementById('initialGreeting');
+            if(greetingEl) {
+                greetingEl.innerHTML = t.initialGreeting;
+            }
+        }
+
+        function switchTab(tab) {
+            ['finder', 'verifier', 'roadmap', 'chat'].forEach(t => {
+                document.getElementById('tab-content-' + t).classList.add('hidden');
+                const btn = document.getElementById('nav-' + t);
+                btn.className = "nav-btn px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50";
+            });
+            document.getElementById('tab-content-' + tab).classList.remove('hidden');
+            document.getElementById('nav-' + tab).className = "nav-btn px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 bg-blue-600 text-white shadow";
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                if(btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All')) || (cat === 'All' && btn.getAttribute('data-i18n') === 'catAll')) {
+                    btn.className = "cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-white text-blue-900 shadow transition";
+                } else {
+                    btn.className = "cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-blue-800/60 text-blue-200 border border-blue-700/60 hover:bg-blue-800 transition";
+                }
+            });
+            renderStandards(document.getElementById('searchInput').value);
+        }
+
+        function renderStandards(search = '') {
+            const grid = document.getElementById('standardsGrid');
+            grid.innerHTML = '';
+            const t = translations[currentLang];
+
+            const filtered = standardsData.filter(s => {
+                const matchCat = currentCategory === 'All' || s.category === currentCategory;
+                const titleStr = s.title[currentLang].toLowerCase();
+                const codeStr = s.code.toLowerCase();
+                const scopeStr = s.scope[currentLang].toLowerCase();
+                const query = search.toLowerCase();
+                return matchCat && (codeStr.includes(query) || titleStr.includes(query) || scopeStr.includes(query));
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-slate-200">
+                        <p class="text-sm font-bold text-slate-700">${currentLang === 'en' ? "Hmm, we couldn't find a standard matching that exact query." : "क्षमा करें, इस खोज से मेल खाता कोई मानक नहीं मिला।"}</p>
+                    </div>`;
+                return;
+            }
+
+            filtered.forEach((s) => {
+                grid.innerHTML += `
+                    <div onclick="openStandardModal(${standardsData.indexOf(s)})" class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-blue-400 transition cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-xl border border-blue-200 group-hover:bg-blue-600 group-hover:text-white transition">${s.code}</span>
+                                <span class="text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full">${s.qco[currentLang]}</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition leading-snug">${s.title[currentLang]}</h3>
+                            <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">${s.scope[currentLang]}</p>
+                        </div>
+                        <div class="border-t border-slate-100 mt-4 pt-3 flex justify-between items-center text-xs">
+                            <span class="text-slate-400 text-[11px]">${t.schemeLabel} <strong>${s.scheme}</strong></span>
+                            <span class="text-blue-600 font-bold flex items-center gap-1 text-[11px]">${t.viewSpecs}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function handleSearch() {
+            renderStandards(document.getElementById('searchInput').value);
+        }
+
+        function openStandardModal(index) {
+            const s = standardsData[index];
+            const t = translations[currentLang];
+            const modal = document.getElementById('standardModal');
+            const content = document.getElementById('modalContent');
+
+            content.innerHTML = `
+                <span class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-xl border border-blue-200">${s.code}</span>
+                <h3 class="text-lg font-extrabold text-slate-900 mt-3">${s.title[currentLang]}</h3>
+                <p class="text-xs text-slate-600 mt-2 leading-relaxed">${s.scope[currentLang]}</p>
+                
+                <div class="mt-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">${currentLang === 'en' ? 'Mandatory Testing Requirements:' : 'अनिवार्य परीक्षण आवश्यकताएँ:'}</p>
+                    <ul class="space-y-2 text-xs text-slate-600">
+                        ${s.tests[currentLang].map(testName => `<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>${testName}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center text-xs text-slate-500">
+                    <span>${t.estTurnaround} <strong>${s.days} ${t.daysText}</strong></span>
+                    <button onclick="closeModal(); switchTab('roadmap'); document.getElementById('calcStandard').value = ${index}; updateFeeCalculation();" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl font-bold hover:bg-blue-700 transition shadow">${t.estimateFeesBtn}</button>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('standardModal').classList.add('hidden');
+        }
+
+        let verifyType = 'HUID';
+        function setVerifyType(type) { verifyType = type; }
+
+        function runVerification() {
+            const val = document.getElementById('verifyInput').value.trim().toUpperCase();
+            const card = document.getElementById('verifyResultCard');
+            card.classList.remove('hidden');
+
+            if(!val) {
+                card.className = "p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-900 text-xs font-medium";
+                card.innerHTML = currentLang === 'en' ? "⚠️ Please type a code to verify (e.g. AH9821)." : "⚠️ कृपया सत्यापित करने के लिए कोड दर्ज करें (उदा. AH9821)।";
+                return;
+            }
+
+            if(val === 'AH9821' || val === 'TG4412') {
+                card.className = "p-5 rounded-2xl border bg-emerald-50 border-emerald-300 text-xs animate-fadeIn";
+                card.innerHTML = currentLang === 'en' ? `
+                    <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm mb-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i> Awesome! This item is 100% Genuine (${val})</div>
+                    <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-emerald-200 text-slate-700 shadow-sm">
+                        <div>Purity: <strong>22K (916 Gold)</strong></div>
+                        <div>Assaying Center: <strong>Assay Lab #04, Delhi</strong></div>
+                        <div>Hallmarked On: <strong>14-Aug-2025</strong></div>
+                        <div>Status: <strong class="text-emerald-700 font-bold">Verified Authentic</strong></div>
+                    </div>
+                ` : `
+                    <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm mb-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i> बहुत बढ़िया! यह वस्तु 100% असली है (${val})</div>
+                    <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-emerald-200 text-slate-700 shadow-sm">
+                        <div>शुद्धता: <strong>22K (916 गोल्ड)</strong></div>
+                        <div>परख केंद्र: <strong>परख केंद्र #04, दिल्ली</strong></div>
+                        <div>हॉलमार्क दिनांक: <strong>14-अगस्त-2025</strong></div>
+                        <div>स्थिति: <strong class="text-emerald-700 font-bold">सत्यापित असली</strong></div>
+                    </div>
+                `;
+            } else if(val === 'CM/L-8400012') {
+                card.className = "p-5 rounded-2xl border bg-emerald-50 border-emerald-300 text-xs animate-fadeIn";
+                card.innerHTML = currentLang === 'en' ? `
+                    <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm mb-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i> Valid & Operative ISI License Found!</div>
+                    <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-emerald-200 text-slate-700 shadow-sm">
+                        <div>Manufacturer: <strong>PureHydro Packagers</strong></div>
+                        <div>Standard: <strong>IS 10500:2012</strong></div>
+                        <div>License Status: <strong class="text-emerald-700 font-bold">Operative</strong></div>
+                        <div>Valid Until: <strong>31-Dec-2027</strong></div>
+                    </div>
+                ` : `
+                    <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm mb-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i> वैध और सक्रिय ISI लाइसेंस मिला!</div>
+                    <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-emerald-200 text-slate-700 shadow-sm">
+                        <div>निर्माता: <strong>प्योरहाइड्रो पैकर्स</strong></div>
+                        <div>मानक: <strong>IS 10500:2012</strong></div>
+                        <div>लाइसेंस स्थिति: <strong class="text-emerald-700 font-bold">सक्रिय</strong></div>
+                        <div>वैध तक: <strong>31-दिसंबर-2027</strong></div>
+                    </div>
+                `;
+            } else {
+                card.className = "p-5 rounded-2xl border bg-rose-50 border-rose-300 text-xs animate-fadeIn";
+                card.innerHTML = currentLang === 'en' ? `
+                    <div class="flex items-center gap-2 text-rose-900 font-bold text-sm mb-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600"></i> Heads Up: Potential Counterfeit Detected!</div>
+                    <p class="text-rose-800 mt-1 leading-relaxed">Code <strong>"${val}"</strong> is not registered in the official BIS database. Please report this misuse immediately through the consumer grievance portal.</p>
+                ` : `
+                    <div class="flex items-center gap-2 text-rose-900 font-bold text-sm mb-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600"></i> चेतावनी: संभावित नकली वस्तु पाई गई!</div>
+                    <p class="text-rose-800 mt-1 leading-relaxed">कोड <strong>"${val}"</strong> आधिकारिक BIS डेटाबेस में पंजीकृत नहीं है। कृपया उपभोक्ता शिकायत पोर्टल के माध्यम से इसकी तुरंत रिपोर्ट करें।</p>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        function simulateScan() {
+            document.getElementById('verifyInput').value = 'AH9821';
+            runVerification();
+        }
+
+        function updateFeeCalculation() {
+            const stdIdx = document.getElementById('calcStandard').value;
+            const scale = document.getElementById('calcScale').value;
+            const labFee = standardsData[stdIdx].labFee;
+
+            const discount = scale === 'micro' ? 0.5 : scale === 'small' ? 0.2 : 0;
+            const app = 1000 * (1 - discount);
+            const audit = 7000 * (1 - discount);
+            const annual = 10000 * (1 - discount);
+            const total = app + audit + labFee + annual;
+
+            document.getElementById('feeApp').innerText = '₹' + app.toLocaleString();
+            document.getElementById('feeAudit').innerText = '₹' + audit.toLocaleString();
+            document.getElementById('feeLab').innerText = '₹' + labFee.toLocaleString();
+            document.getElementById('feeAnnual').innerText = '₹' + annual.toLocaleString();
+            document.getElementById('feeTotal').innerText = '₹' + total.toLocaleString();
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if(!text) return;
+
+            appendMessage(text, 'user');
+            input.value = '';
+
+            setTimeout(() => {
+                let replyEn = "That's a great question! For complete guidance on conformity assessment, feel free to visit manakonline.in or start your application under Scheme-I.";
+                let replyHi = "यह एक बेहतरीन सवाल है! अनुरूपता मूल्यांकन पर पूरी जानकारी के लिए manakonline.in पर जाएं या योजना-I के तहत आवेदन शुरू करें।";
+                
+                const lower = text.toLowerCase();
+                if(lower.includes('water') || lower.includes('10500') || lower.includes('पानी')) {
+                    replyEn = "Yes! Packaged drinking water is strictly regulated under IS 10500:2012. It falls under mandatory QCO rules, meaning you cannot sell bottled water without an active ISI license.";
+                    replyHi = "हाँ! पैकेज्ड पेयजल को IS 10500:2012 के तहत सख्ती से विनियमित किया जाता है। यह अनिवार्य QCO नियमों के अंतर्गत आता है, यानी आप बिना सक्रिय ISI लाइसेंस के पानी नहीं बेच सकते।";
+                } else if(lower.includes('gold') || lower.includes('huid') || lower.includes('सोना')) {
+                    replyEn = "Gold hallmarking uses a unique 6-digit alphanumeric code called HUID under IS 14150. You can verify any hallmarked jewellery instantly in our 'Verify Authenticity' tab!";
+                    replyHi = "सोने की हॉलमार्किंग IS 14150 के तहत HUID नामक 6-अंकों के कोड का उपयोग करती है। आप हमारे 'सत्यापन' टैब में किसी भी आभूषण की तुरंत जांच कर सकते हैं!";
+                } else if(lower.includes('micro') || lower.includes('concession') || lower.includes('msme') || lower.includes('छूट')) {
+                    replyEn = "Good news for entrepreneurs! BIS provides a 50% concession on application and annual marking fees for Micro enterprises and women-led ventures, and 20% for Small units.";
+                    replyHi = "उद्यमियों के लिए अच्छी खबर! BIS सूक्ष्म उद्यमों और महिला उद्यमियों के लिए आवेदन और वार्षिक शुल्क पर 50% की छूट और छोटे उद्यमों के लिए 20% की छूट देता है।";
+                }
+                appendBilingualBotMessage(replyEn, replyHi);
+            }, 600);
+        }
+
+        function sendQuickPrompt(promptText) {
+            document.getElementById('chatInput').value = promptText;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function appendMessage(text, sender) {
+            const chat = document.getElementById('chatMessages');
+            const isBot = sender === 'bot';
+            chat.innerHTML += `
+                <div class="flex ${isBot ? 'justify-start' : 'justify-end'} animate-fadeIn">
+                    <div class="max-w-[85%] rounded-2xl p-4 text-xs ${isBot ? 'bg-slate-100 text-slate-800 border border-slate-200' : 'bg-blue-600 text-white font-medium'} leading-relaxed shadow-sm">
+                        ${text}
+                    </div>
+                </div>
+            `;
+            chat.scrollTop = chat.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function appendBilingualBotMessage(textEn, textHi) {
+            const chat = document.getElementById('chatMessages');
+            const safeEn = textEn.replace(/'/g, "\\'");
+            const safeHi = textHi.replace(/'/g, "\\'");
+            
+            chat.innerHTML += `
+                <div class="flex justify-start animate-fadeIn">
+                    <div class="max-w-[85%] rounded-2xl p-4 text-xs bg-slate-100 text-slate-800 border border-slate-200 leading-relaxed shadow-sm space-y-2">
+                        <div><strong>English:</strong> ${textEn}</div>
+                        <div class="text-slate-600 border-t pt-1.5"><strong>हिंदी:</strong> ${textHi}</div>
+                        <div class="flex gap-2 pt-2 border-t border-slate-200">
+                            <button onclick="speakResponse('${safeEn}', 'en-IN')" class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-blue-100 transition">🔊 Listen (EN)</button>
+                            <button onclick="speakResponse('${safeHi}', 'hi-IN')" class="text-[10px] bg-orange-50 text-orange-800 border border-orange-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-orange-100 transition">🔊 सुनें (HI)</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chat.scrollTop = chat.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function speakResponse(text, lang) {
+            if('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = lang; // 'en-IN' or 'hi-IN'
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        function resetChat() {
+            const t = translations[currentLang];
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] rounded-2xl p-4 text-xs bg-slate-100 text-slate-800 border border-slate-200 leading-relaxed shadow-sm">
+                        <span id="initialGreeting">${t.initialGreeting}</span><br>
+                        <div class="mt-3 flex gap-2">
+                            <button onclick="speakResponse('Namaste! I am your intelligent compliance assistant for Indian Standards and BIS services.', 'en-IN')" class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-blue-100 transition">🔊 Listen (EN)</button>
+                            <button onclick="speakResponse('नमस्ते! मैं भारतीय मानकों और बीआईएस सेवाओं के लिए आपका बुद्धिमान अनुपालन सहायक हूँ।', 'hi-IN')" class="text-[10px] bg-orange-50 text-orange-800 border border-orange-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-orange-100 transition">🔊 सुनें (HI)</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderStandards();
+        updateFeeCalculation();
+    </script>
+</body>
+</html>
